@@ -22,17 +22,10 @@ class App(QWidget):
 
     def initUI(self):
 
-        im = Image.open("test.jpg")
-        self.qim = ImageQt.ImageQt(im)
-        self.pix = QPixmap.fromImage(self.qim)
-        self.label2 = QLabel(self)
-        self.label2.setPixmap(self.pix)
-
-        #
-        # downloadButton = QPushButton('Download', self)
-        # downloadButton.resize(150, 40)
-        # downloadButton.move(10, 5)
-        # downloadButton.clicked.connect(self.click_download_image)
+        downloadButton = QPushButton('Download', self)
+        downloadButton.resize(150, 40)
+        downloadButton.move(10, 5)
+        downloadButton.clicked.connect(self.click_download_image)
         #
         # #self.image = toImage(self.pixmap)
         #
@@ -44,6 +37,7 @@ class App(QWidget):
         self.show()
 
     def click_download_image(self):
+
         self.label = QLabel(self)
         self.label.resize(400, 400)
 
@@ -53,10 +47,12 @@ class App(QWidget):
         filename = QFileDialog.getOpenFileName(self, 'Choose image', './', 'All Files (*);;Python Files (*.py)', options=options)
 
         imagePath = filename[0]
+        # converting pil-image to pixmap
+        im = Image.open(imagePath)
+        self.qim = ImageQt.ImageQt(im)
+        self.pix = QPixmap.fromImage(self.qim)
 
-        self.pixmap = QPixmap(imagePath)
-        self.label.setPixmap(self.pixmap)
-
+        self.label.setPixmap(self.pix)
         self.label.move(10, 50)
         self.label.show()
 
