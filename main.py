@@ -5,7 +5,7 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-from PIL import Image, ImageQt
+from PIL import Image, ImageQt, ImageDraw, ImageFilter
 import io
 
 class App(QWidget):
@@ -16,7 +16,8 @@ class App(QWidget):
         self.setWindowTitle('Photo Editor')
         #self.pixmap = None
         self.pix = None
-        self.label2 = None
+        self.label = None
+        self.im = None
         self.initUI()
 
 
@@ -33,8 +34,8 @@ class App(QWidget):
         # shadesOfGrayButton.resize(150, 40)
         # shadesOfGrayButton.move(300, 5)
         # #shadesOfGrayButton.clicked.connect(self.shades_of_gray())
-
         self.show()
+
 
     def click_download_image(self):
 
@@ -47,18 +48,22 @@ class App(QWidget):
         filename = QFileDialog.getOpenFileName(self, 'Choose image', './', 'All Files (*);;Python Files (*.py)', options=options)
 
         imagePath = filename[0]
-        # converting pil-image to pixmap
-        im = Image.open(imagePath)
-        self.qim = ImageQt.ImageQt(im)
-        self.pix = QPixmap.fromImage(self.qim)
 
-        self.label.setPixmap(self.pix)
+        self.im = Image.open(imagePath)
+
+        self.label.setPixmap(self.convert_pil_image_to_pixmap())
+
         self.label.move(10, 50)
         self.label.show()
 
+    def convert_pil_image_to_pixmap(self):
+        self.qim = ImageQt.ImageQt(self.im)
+        self.pix = QPixmap.fromImage(self.qim)
+        return self.pix
+
     def shades_of_gray(self):
 
-        #draw = ImageDraw.Draw(self.pixmap)
+        draw = ImageDraw.Draw(self.im)
         width = self.pixmap.size[0]
         height = self.pixmap.size[1]
         pix = self.pixmap.load
@@ -69,7 +74,7 @@ class App(QWidget):
                 b = pix[i, j][1]
                 c = pix[i, j][2]
                 S = (a + b + c) // 3
-                #draw.point((i, j), (S, S, S))
+                draw.point((i, j), (S, S, S))
 
     # def sepia(self):
     #     depth = int(input('depth:'))
