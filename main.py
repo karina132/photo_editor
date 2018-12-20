@@ -12,12 +12,12 @@ class App(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.setGeometry(10, 10, 800, 500)
+        self.setGeometry(100,100, 800, 500)
         self.setWindowTitle('Photo Editor')
-        # self.pixmap = None
-        self.pix = None
+        self.pix = QPixmap
         self.label = QLabel(self)
-        # self.pil_im = None
+        self.label.resize(400, 400)
+        self.label.move(10, 50)
         self.pil_im = Image
         self.initUI()
 
@@ -28,49 +28,63 @@ class App(QWidget):
         downloadButton.resize(150, 40)
         downloadButton.move(10, 5)
         downloadButton.clicked.connect(self.click_download_image)
+        #
+        # self.blurFilterButton = QPushButton('Blur filter', self)
 
-        self.shadesOfGrayButton = QPushButton('Shades of gray', self)
-        self.shadesOfGrayButton.resize(150, 40)
-        self.shadesOfGrayButton.move(300, 5)
-        self.shadesOfGrayButton.setEnabled(False)
-        #self.shadesOfGrayButton.clicked.connect(self.shades_of_gray())
+        self.blurFilterButton = QPushButton(self)
+        self.blurFilterButton.resize(100, 100)
+        self.blurFilterButton.move(300, 5)
+        self.blurFilterButton.setEnabled(False)
+        self.blurFilterButton.clicked.connect(self.blur_filter)
+    
 
         self.show()
 
     def set_filters_state(self, state):
-        self.shadesOfGrayButton.setEnabled(state)
+        self.blurFilterButton.setEnabled(state)
+
+
+    def set_buttons_icon(self):
+        self.blurFilterButton.setIcon(QImage())
+        self.blurFilterButton.setIconSize(QSize(100, 100))
+
 
     def click_download_image(self):
-
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
 
-        filename = QFileDialog.getOpenFileName(self, 'Choose image', './', 'All Files (*);;Python Files (*.py)', options=options)
+        filename = QFileDialog.getOpenFileName(self)
         imagePath = filename[0]
-
         self.pil_im = Image.open(imagePath)
         self.set_image_on_label()
+        #self.blurFilterButton.setEnabled(True)
         self.set_filters_state(True)
-        self.shades_of_gray()
+        self.blurFilterButton.setIcon(QImage())
+        self.blurFilterButton.setIconSize(QSize(100, 100))
+        #self.set_buttons_icon()
 
 
     def set_image_on_label(self):
-        self.label.resize(400, 400)
         self.label.setPixmap(self.convert_pil_image_to_pixmap())
-        self.label.move(10, 50)
         self.label.show()
 
 
     def convert_pil_image_to_pixmap(self):
+
         self.qim = ImageQt.ImageQt(self.pil_im)
         self.pix = QPixmap.fromImage(self.qim)
         return self.pix
 
 
-    def shades_of_gray(self):
+    def blur_filter(self):
         self.pil_im = self.pil_im.filter(ImageFilter.BLUR)
         self.set_image_on_label()
+        #self.pil_im.
 
+
+    def sharpen_filter(self):
+        self.pil_im = self.pil_im.filter(ImageFilter.SHARPEN)
+        self.set_image_on_label()
 
     # def sepia(self):
     #     pix = self.pil_im.load()
@@ -79,11 +93,6 @@ class App(QWidget):
     #             s = sum(pix[i, j]) // 3
     #             k = 30
     #             pix[i, j] = (s + k * 2, s + k, s)
-
-
-
-
-
         # draw = ImageDraw.Draw(self.im)
         # width = self.pixmap.size[0]
         # height = self.pixmap.size[1]
